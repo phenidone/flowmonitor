@@ -19,6 +19,8 @@
 #define INPIN 1           ///< pin-change monitoring on PC1 = pin 6
 #define OUTPIN 4          ///< output-enable is PC4 = pin3
 
+#define INVERTOUT 1       ///< stupid relay-driver board is active-low
+
 volatile unsigned long lastChange=0;
 volatile int pulses=0;
 volatile boolean running=false;
@@ -26,7 +28,7 @@ volatile boolean running=false;
 void setup()
 {
   pinMode(OUTPIN, OUTPUT);
-  digitalWrite(OUTPUT, 0);
+  digitalWrite(OUTPIN, INVERTOUT);
   cli();
   GIMSK=(1 << PCIE);   // enable pin-change interrupt
   PCMSK=(1 << INPIN);    // on the correct pin
@@ -62,6 +64,6 @@ void loop()
     running=false;
   }
 
-  digitalWrite(OUTPIN, running);
+  digitalWrite(OUTPIN, running ^ INVERTOUT);
   delay(POLL_PERIOD);
 }
